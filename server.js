@@ -1,6 +1,7 @@
 "use strict";
 
 var express = require("express");
+var cookieParser = require("cookie-parser")
 var favicon = require("serve-favicon");
 var bodyParser = require("body-parser");
 var session = require("express-session");
@@ -14,6 +15,7 @@ var marked = require("marked");
 //var helmet = require("helmet");
 //var nosniff = require('dont-sniff-mimetype');
 var app = express(); // Web framework to handle routing requests
+app.use(cookieParser());
 var routes = require("./app/routes");
 var config = require("./config/config"); // Application config properties
 /*
@@ -77,14 +79,14 @@ MongoClient.connect(config.db, function(err, db) {
     }));
 
     // Enable session management using express middleware
-    app.use(express.session({
+    app.use(session({
         // genid: function(req) {
         //    return genuuid() // use UUIDs for session IDs
         //},
         secret: "s3Cur3",
         // Both mandatory in Express v4
         saveUninitialized: true,
-        resave: true
+        resave: true,
         /*
         // Fix for A5 - Security MisConfig
         // Use generic cookie name
@@ -95,12 +97,10 @@ MongoClient.connect(config.db, function(err, db) {
         // Fix for A3 - XSS
         // TODO: Add "maxAge"
         cookie: {
-            httpOnly: true
+            httpOnly: true,
             // Remember to start an HTTPS server to get this working
             //secure: true
         }
-
-
     }));
 
     /*
