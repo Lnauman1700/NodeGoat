@@ -72,7 +72,7 @@ function SessionHandler(db) {
                     // console.log('Error: attempt to login with invalid user: %s', ESAPI.encoder().encodeForHTML(userName));
                     // console.log('Error: attempt to login with invalid user: %s', ESAPI.encoder().encodeForJavaScript(userName));
                     // console.log('Error: attempt to login with invalid user: %s', ESAPI.encoder().encodeForURL(userName));
-                    
+
                     // or if you know that this is a CRLF vulnerability you can target this specifically as follows:
                     console.log('Error: attempt to login with invalid user: %s', userName.replace(/(\r\n|\r|\n)/g, '_'));
 
@@ -263,6 +263,21 @@ function SessionHandler(db) {
             return res.render("dashboard", doc);
         });
 
+    };
+
+    this.isAdminUserMiddleware = function(req, res, next) {
+        if (req.session.userId) {
+            userDAO.getUserById(req.session.userId, function(err, user) {
+                 if(user && user.isAdmin) {
+                     next();
+                 } else {
+                     return res.redirect("/login");
+                 }
+            });
+        } else {
+            console.log("redirecting to login");
+            return res.redirect("/login");
+        }
     };
 }
 
